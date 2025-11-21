@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Notes</title>
+    <style>
+        body {
+            font-family: "Poppins", sans-serif;
+            background: linear-gradient(135deg, #ffd9e8, #d9e8ff);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        h1 {
+            font-weight: 600;
+            color: #444;
+            margin-bottom: 20px;
+        }
+
+        .notes-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+            gap: 20px;
+            width: 100%;
+            max-width: 900px;
+        }
+
+        .note {
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(10px);
+            padding: 20px;
+            border-radius: 20px;
+            min-height: 140px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            position: relative;
+            transition: 0.2s;
+            animation: fadeIn 0.4s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        textarea {
+            width: 100%;
+            border: none;
+            background: transparent;
+            resize: none;
+            outline: none;
+            font-size: 15px;
+            color: #333;
+        }
+
+        button {
+            background: #b7c9ff;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 40px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-bottom: 20px;
+            transition: 0.2s;
+        }
+
+        button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+
+        .delete-btn {
+            position: absolute;
+            top: 10px;
+            right: 12px;
+            background: #ffb3c6;
+            border: none;
+            border-radius: 20px;
+            padding: 4px 8px;
+            cursor: pointer;
+            font-size: 13px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>My Notes</h1>
+
+    <button onclick="addNote()">+ Add Note</button>
+
+    <div class="notes-container" id="notesContainer"></div>
+
+    <script>
+        function loadNotes() {
+            const notes = JSON.parse(localStorage.getItem("notes") || "[]");
+            const container = document.getElementById("notesContainer");
+            container.innerHTML = "";
+
+            notes.forEach((text, index) => {
+                const noteEl = document.createElement("div");
+                noteEl.className = "note";
+
+                noteEl.innerHTML = `
+                    <button class="delete-btn" onclick="deleteNote(${index})">X</button>
+                    <textarea oninput="updateNotes()">${text}</textarea>
+                `;
+
+                container.appendChild(noteEl);
+            });
+        }
+
+        function addNote() {
+            const notes = JSON.parse(localStorage.getItem("notes") || "[]");
+            notes.push("");
+            localStorage.setItem("notes", JSON.stringify(notes));
+            loadNotes();
+        }
+
+        function updateNotes() {
+            const textareas = document.querySelectorAll("textarea");
+            const notes = [];
+            textareas.forEach(t => notes.push(t.value));
+            localStorage.setItem("notes", JSON.stringify(notes));
+        }
+
+        function deleteNote(index) {
+            const notes = JSON.parse(localStorage.getItem("notes") || "[]");
+            notes.splice(index, 1);
+            localStorage.setItem("notes", JSON.stringify(notes));
+            loadNotes();
+        }
+
+        loadNotes();
+    </script>
+
+</body>
+</html>
